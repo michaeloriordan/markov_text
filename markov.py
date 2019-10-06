@@ -2,11 +2,11 @@ import random
 
 
 class MarkovText:
-    def __init__(phrase_len=1):
+    def __init__(self, phrase_len=1):
         self.phrase_len = phrase_len
         self.phrase_dict = {}
 
-    def build_dict(filename=None):
+    def build_dict(self, filename=None):
         with open(filename) as f:
             allwords = [word for line in f for word in line.split()]
 
@@ -15,33 +15,26 @@ class MarkovText:
         for *words, next_word in zipwords:
             phrase = ' '.join(words)
             if phrase in self.phrase_dict:
-                phrase_dict[phrase].append(next_word)
+                self.phrase_dict[phrase].append(next_word)
             else:
-                phrase_dict[phrase] = [next_word]
+                self.phrase_dict[phrase] = [next_word]
+
+    def choose_next_word(self, phrase):
+        return random.choice(self.phrase_dict[phrase])
+
+    def generate_story(self, story_len=200, phrase_init=None):
+        story = phrase_init.split()
+        if len(story) != self.phrase_len:
+            print(f'Error - phrase must be of length {self.phrase_len}!')
+            return
+        for i in range(story_len):
+            phrase = ' '.join([story[i+j] for j in range(self.phrase_len)])
+            story.append(self.choose_next_word(phrase))
+
+        print(' '.join(story))
 
 
-with open('lotr.txt') as f:
-    fulltext = [word for line in f for word in line.split()]
-
-zipped_words = zip(fulltext, fulltext[1:], fulltext[2:], fulltext[3:])
-
-markov_dict = {}
-
-for *words, next_word in zipped_words:
-    phrase = ' '.join(words)
-    if phrase in markov_dict:
-        markov_dict[phrase].append(next_word)
-    else:
-        markov_dict[phrase] = [next_word]
-
-
-def choose_next_word(phrase):
-    return random.choice(markov_dict[phrase])
-
-
-story = 'There was a'.split()
-for i in range(200):
-    phrase = ' '.join([story[i+j] for j in range(3)])
-    story.append(choose_next_word(phrase))
-
-print(' '.join(story))
+if __name__ == '__main__':
+    markov_text = MarkovText(phrase_len=3)
+    markov_text.build_dict(filename='lotr.txt')
+    markov_text.generate_story(story_len=200, phrase_init='There was a')
