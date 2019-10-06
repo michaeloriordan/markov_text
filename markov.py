@@ -24,7 +24,7 @@ class MarkovText:
 
     def generate_story(self, story_len=200, phrase_init=None):
         story = phrase_init.split()
-        assert len(story) == self.phrase_len, f'phrase length'
+        assert len(story) == self.phrase_len, f'phrase length != {self.phrase_len}'
         for i in range(story_len):
             phrase = ' '.join([story[i+j] for j in range(self.phrase_len)])
             story.append(self.choose_next_word(phrase))
