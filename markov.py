@@ -6,7 +6,7 @@ class MarkovText:
         self.phrase_len = phrase_len
         self.phrase_dict = {}
 
-    def build_dict(self, filename=None):
+    def update_dict(self, filename=None):
         with open(filename) as f:
             allwords = [word for line in f for word in line.split()]
 
@@ -33,6 +33,8 @@ class MarkovText:
 
 
 if __name__ == '__main__':
+    import os
     markov_text = MarkovText(phrase_len=3)
-    markov_text.build_dict(filename='lotr.txt')
-    markov_text.generate_story(story_len=200, phrase_init='There was a')
+    for f in (f for f in os.listdir() if f.endswith('.txt')):
+        markov_text.update_dict(filename=f)
+    markov_text.generate_story(story_len=400, phrase_init='There was a')
